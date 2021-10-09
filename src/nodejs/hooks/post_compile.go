@@ -2,12 +2,14 @@ package hooks
 
 import (
 	"os"
+	"strings"
+
 	"github.com/cloudfoundry/libbuildpack"
 )
 
 type PostCompileHook struct {
 	libbuildpack.DefaultHook
-	Log               *libbuildpack.Logger
+	Log *libbuildpack.Logger
 }
 
 func init() {
@@ -18,6 +20,8 @@ func init() {
 }
 
 func (h PostCompileHook) AfterCompile(stager *libbuildpack.Stager) error {
-	h.Log.Debug("I was here in the logs")
+	if strings.EqualFold(os.Getenv("PCH_ENABLED"), "TRUE") {
+		h.Log.Info("I was here in the logs")
+	}
 	return nil
 }

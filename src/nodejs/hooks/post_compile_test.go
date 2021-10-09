@@ -1,8 +1,8 @@
 package hooks_test
 
 import (
-	"os"
 	"bytes"
+	"os"
 
 	"github.com/cloudfoundry/libbuildpack"
 
@@ -33,11 +33,19 @@ var _ = Describe("postCompileHook", func() {
 		stager = libbuildpack.NewStager(args, logger, &libbuildpack.Manifest{})
 	})
 
-	Context("post compile does nothing", func() {
-// Since i'm using a logger to carry the message
-		os.Setenv("BP_DEBUG", "TRUE")
-		It("should not error & write messages", func() {
-			postCompileHook.AfterCompile(stager)
+	Context("PostCompileHook(PCH) is not enabled", func() {
+		It("should not write messages", func() {
+			os.Setenv("PCH_ENABLED", "FALSE")
+			err := postCompileHook.AfterCompile(stager)
+			Expect(err).To(BeNil())
+			Expect(buffer.String()).To(Equal(""))
+		})
+	})
+	Context("PostCompileHook(PCH) is enabled", func() {
+		It("should write messages", func() {
+			os.Setenv("PCH_ENABLED", "TRUE")
+			err := postCompileHook.AfterCompile(stager)
+			Expect(err).To(BeNil())
 			Expect(buffer.String()).To(ContainSubstring("I was here in the logs"))
 		})
 	})
