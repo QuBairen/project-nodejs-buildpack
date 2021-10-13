@@ -5,9 +5,9 @@ import (
 )
 
 type MockClient struct {
-	Dofunc func(req *http.Request) (*http.Response, error)
+	MockDo func(req *http.Request) (*http.Response, error)
 }
 
 func (m *MockClient) Do(req *http.Request) (*http.Response, error) {
-	return nil, nil
+        return m.MockDo(req)
 }

@@ -2,6 +2,7 @@ package quote_test
 
 import (
 	"bytes"
+	"errors"
 	"net/http"
 	"time"
 
@@ -27,6 +28,26 @@ var _ = Describe("test quote client", func() {
 		logger = libbuildpack.NewLogger(buffer)
 	})
 
+	Context("with a broken httpclient", func() {
+		It("should catch client err", func() {
+
+			mockDo := func(req *http.Request) (*http.Response, error) {
+				return nil, errors.New("client do call returns error")
+			}
+			lawRetriever = quote.LawRetriever{
+				Log: logger,
+				Client: &MockClient{
+					MockDo: mockDo,
+				},
+			}
+			source = "http://goins.me/laws.json"
+			laws, err := lawRetriever.RetrieveLaw(source)
+			Expect(err).ToNot(BeNil())
+			Expect(laws).To(BeNil())
+
+		})
+
+	})
 	Context("with a working httpclient", func() {
 		BeforeEach(func() {
 			httpClient = &http.Client{
@@ -46,6 +67,7 @@ var _ = Describe("test quote client", func() {
 			})
 		})
 
+//TODO Integration test should not be included...
 		Context("read from webserice", func() {
 			It("should not error", func() {
 				source = "http://goins.me/laws.json"

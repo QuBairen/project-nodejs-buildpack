@@ -55,6 +55,5 @@ func (lawRetriever LawRetriever) RetrieveLaw(source string) (Law, error) {
 
 	//	law := laws[0].Name + laws[0].quote
 
-	//TODO return laws as well
 	return laws, nil
 }
