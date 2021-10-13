@@ -2,11 +2,9 @@ package quote
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"io/ioutil"
 	"net/http"
-	"time"
-	"errors"
 
 	"github.com/cloudfoundry/libbuildpack"
 )
@@ -17,29 +15,27 @@ type Law []struct {
 }
 
 type LawRetriever struct {
-	Log *libbuildpack.Logger
+	Log    *libbuildpack.Logger
+	Client HttpClient
 }
 
-func (lawRetriever LawRetriever) RetrieveLaw(source string) error {
+func (lawRetriever LawRetriever) RetrieveLaw(source string) (Law, error) {
 	log := lawRetriever.Log
-	//TODO if source is nil
+	client := lawRetriever.Client
 
-	if (len(source) <= 0) {
+	if len(source) <= 0 {
 		log.Error("invalid source provided")
-		return errors.New("source must be provided")
-	}
-	httpClient := http.Client{
-		Timeout: time.Second * 2,
+		return nil, errors.New("source must be provided")
 	}
 
 	req, err := http.NewRequest(http.MethodGet, source, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	res, err := httpClient.Do(req)
+	res, err := client.Do(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if res.Body != nil {
@@ -48,16 +44,17 @@ func (lawRetriever LawRetriever) RetrieveLaw(source string) error {
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	laws := Law{}
 	err = json.Unmarshal(body, &laws)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	fmt.Println(laws[0].Name)
+
+	//	law := laws[0].Name + laws[0].quote
 
 	//TODO return laws as well
-	return nil
+	return laws, nil
 }
