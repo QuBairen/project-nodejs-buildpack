@@ -14,14 +14,17 @@ type Law []struct {
 	Quote string `json: "name"`
 }
 
+type LawClient interface {
+	RetrieveLaw(source string) (Law, error)
+}
 type LawRetriever struct {
 	Log    *libbuildpack.Logger
 	Client HttpClient
 }
 
-func (lawRetriever LawRetriever) RetrieveLaw(source string) (Law, error) {
-	log := lawRetriever.Log
-	client := lawRetriever.Client
+func (l *LawRetriever) RetrieveLaw(source string) (Law, error) {
+	log := l.Log
+	client := l.Client
 
 	if len(source) <= 0 {
 		log.Error("invalid source provided")
@@ -52,8 +55,6 @@ func (lawRetriever LawRetriever) RetrieveLaw(source string) (Law, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	//	law := laws[0].Name + laws[0].quote
 
 	return laws, nil
 }

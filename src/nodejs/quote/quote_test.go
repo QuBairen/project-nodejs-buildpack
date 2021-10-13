@@ -67,7 +67,7 @@ var _ = Describe("test quote client", func() {
 			})
 		})
 
-//TODO Integration test should not be included...
+		//TODO Integration test should not be included...
 		Context("read from webserice", func() {
 			It("should not error", func() {
 				source = "http://goins.me/laws.json"
