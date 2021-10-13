@@ -58,7 +58,8 @@ var _ = Describe("postCompileHook", func() {
 			It("should echo results", func() {
 				os.Setenv("PCH_ENABLED", "TRUE")
 				err := postCompileHook.AfterCompile(stager)
-				// if on off chance this pulls back murphy (integration test)
+				// if on the off chance this pulls back murphy (integration test)
+				//Integration test should not really be included...
 				if err != nil {
 					Expect(fmt.Sprint(err)).To(ContainSubstring("Murphy"))
 				}
